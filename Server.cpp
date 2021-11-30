@@ -1,36 +1,119 @@
-#include <iostream>
+#include "thread.h"
+#include "socketserver.h"
 #include <stdlib.h>
+#include <time.h>
+#include <list>
+#include <vector>
+#include <algorithm>
+#include <thread>
 #include <string>
+#include <unistd.h>
+#include <iostream>
 
+using namespace Sync;
 using namespace std;
-
-int serverThread(){
-	//main server thread
-	
-	//connect to clients via sockets
-	
-	//create new client thread
-
+namespace{
+	volatile bool typeYes = true;
 }
 
-int clientThread(){
-	//main client thread
-	
-	//interacts with clients
-}
+class ClientThread : public Thread
+{
+private:
+    Socket& socket;
+    ByteArray data;
 
-int main(void){
-	string inputData;
-	string serverMsg;
-	const int portNo = 3000;
+public:
+    ClientThread(Socket& socket)
+    : socket(socket)
+    {}
+    
+    Socket& GetSocket()
+    {
+    	return socket;
+    }
+    
+    virtual long ThreadMain()
+    {
+	// Wait for data
+	do {
+        socket.Read(data);
+
+        //Convert it to a string and capitalize the string
+        string str = data.ToString();
+        transform(str.begin(), str.end(), str.begin(), ::toupper);
+        
+        //Convert it back to a ByteArray type
+        ByteArray response = ByteArray(str);
+        
+        // Send it back
+        socket.Write(response);
+        }
+        while (data.ToString() !="done");
+	return 1;
+    }
+};
+    
+// This thread handles the server operations
+class ServerThread : public Thread
+{
+private:
+    SocketServer& server;
+    ByteArray data;
+    vector<ClientThread *> threads;
+public:
+    ServerThread(SocketServer& server)
+    : server(server)
+    {}
+
+    ~ServerThread()
+    {
+        // Cleanup
+	//...
+	for(ClientThread* client : threads){
+		Socket& terminate = client->GetSocket();
+		//terminate.Read(data);
+		std::string stringer = "endtheclients";
+		ByteArray response = ByteArray(stringer);
+		terminate.Write(response);
+		
+		//terminate.Close();
+	}
+    }
+
+    virtual long ThreadMain()
+    {
+    while(true){
+        // Wait for a client socket connection
+        Socket* newConnection = new Socket(server.Accept());
+
+        // A reference to this pointer 
+        Socket& socketReference = *newConnection;
+	//You can use this to read data from socket and write data to socket. You may want to put this read/write somewhere else. You may use ByteArray
+	threads.push_back(new ClientThread(socketReference));
 	
-	cout << "This is the server." << endl;
+	}
+	return 1;
+    }
+};
+
+int main(void)
+{
 	
-	//create the main server thread
+    std::cout << "I am a server." << std::endl;
+	sData = "Hello from server.";
 	
-	//check for server exit
+    std::cout << "Press 'enter' to terminate" << std::endl;
+    // Create our server
+    SocketServer server(3000);    
 	
-	//shut down server and send message to terminate clients
+    // Need a thread to perform server operations
+    ServerThread serverThread(server);
 	
-	return 0;
+    // This will wait for input to shutdown the server
+    FlexWait cinWaiter(1, stdin);
+    cinWaiter.Wait();
+    
+    // Shut down and clean up the server
+    server.Shutdown();
+
 }
