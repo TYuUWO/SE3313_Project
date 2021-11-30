@@ -34,7 +34,12 @@ public:
     
     virtual long ThreadMain()
     {
-	// Wait for data
+	// Wait for user info
+	try socket.Read(data)}
+	catch (...) {
+		cout << "Login failed" <<endl;
+	}
+	
 	do {
         socket.Read(data);
 
