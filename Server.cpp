@@ -45,6 +45,33 @@ public:
     	return 0;
     }
     
+    int saveData(void){
+    	//prompt user to save
+    	ByteArray response = ByteArray("Would you like to save? (y/n): ");
+    	try {socket.Write(response);}
+    	catch (...) {
+    		cout << "Save failed (Server end)" <<endl;
+    	}
+	// Wait for user info
+	try {socket.Read(data);}
+	catch (...) {
+		cout << "Save failed (Client end)" <<endl;
+	}
+	response = ByteArray("Saving... please wait");
+	try {socket.Write(response);}
+    	catch (...) {
+    		cout << "Save failed (Server end)" <<endl;
+    	}
+    	//code to save data
+    	
+    	response = ByteArray("Saved");
+	try {socket.Write(response);}
+    	catch (...) {
+    		cout << "Save failed (Server end)" <<endl;
+    	}
+    	return 0;
+    }
+    
     virtual long ThreadMain()
     {
     	ByteArray response = ByteArray("Please enter your username: ");
@@ -54,7 +81,7 @@ public:
     		cout << "Login failed (Server end)" <<endl;
     	}
 	// Wait for user info
-	try {socket.Read(data)}
+	try {socket.Read(data);}
 	catch (...) {
 		cout << "Login failed (Client end)" <<endl;
 	}
@@ -128,7 +155,6 @@ int main(void)
 {
 	
     std::cout << "I am a server." << std::endl;
-	sData = "Hello from server.";
 	
     std::cout << "Press 'enter' to terminate" << std::endl;
     // Create our server

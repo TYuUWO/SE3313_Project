@@ -14,6 +14,7 @@ int main(void)
 	string inputData;
 	bool socketCreated = true;
 	string ipAddress;
+	ByteArray data;
 	// Welcome the user 
 	std::cout << "SE3313 Lab 3 Client" << std::endl;
 	cout << "Enter the server IP address: " << endl;
