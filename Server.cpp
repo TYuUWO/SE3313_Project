@@ -34,10 +34,16 @@ public:
     
     virtual long ThreadMain()
     {
+    	ByteArray response = ByteArray("Please enter your username: ");
+    	//Prompt user login
+    	try {socket.Write(response);}
+    	catch (...) {
+    		cout << "Login failed (Server end)" <<endl;
+    	}
 	// Wait for user info
-	try socket.Read(data)}
+	try {socket.Read(data)}
 	catch (...) {
-		cout << "Login failed" <<endl;
+		cout << "Login failed (Client end)" <<endl;
 	}
 	
 	do {
