@@ -16,7 +16,8 @@ int main(void){
 	
 	
 	while(inputData != "quit" && socketCreated){
-		
+		//main game
 	}
+	
 	return 0;
 }
