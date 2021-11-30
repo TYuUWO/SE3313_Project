@@ -20,7 +20,7 @@ int main(void)
 	getline(cin,ipAddress);
 	
 	// Create our socket
-	Socket socket("127.0.0.1", 3000);
+	Socket socket(ipAddress, 3000);
 	//attempt to initiate connection
 	//if socket creation failed, set the flag and print the error
 	try {socket.Open();}
