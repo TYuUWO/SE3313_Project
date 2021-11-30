@@ -32,6 +32,19 @@ public:
     	return socket;
     }
     
+    int enterDungeon(void){
+    	//code to create randomized dungeon
+    	return 0;
+    }
+    
+    int enemyEncounter(void){
+    	//code to generate a random enemy
+    	
+    	//code to do combat with the enemy
+    	
+    	return 0;
+    }
+    
     virtual long ThreadMain()
     {
     	ByteArray response = ByteArray("Please enter your username: ");
@@ -45,6 +58,10 @@ public:
 	catch (...) {
 		cout << "Login failed (Client end)" <<endl;
 	}
+	
+	//code for login process
+	
+	//code for initialization
 	
 	do {
         socket.Read(data);
