@@ -34,11 +34,40 @@ public:
     
     int enterDungeon(void){
     	//code to create randomized dungeon
+    	
+    	int floors = 5; //minimum of 5 floors, max of 15
+    	
+    	//create randomizer seed
+    	srand(time(NULL));
+    	
+    	floors += (rand() % 10 + 0);
+    	
+    	ByteArray response = ByteArray("You have entered the dungeon.");
+    	try {socket.Write(response);}
+    	catch (...) {
+    		cout << "Entry failed (Server end)" <<endl;
+    	}
+    	
     	return 0;
     }
     
-    int enemyEncounter(void){
+    int enemyEncounter(int floor){
     	//code to generate a random enemy
+    	
+    	string encounters[10] = {"goblin", "slime", "skeleton", "zombie", "giant snake", "orc", "wraith", "demon", "dragon", "behemoth"};
+    	string encounter;
+    	
+    	//create randomizer seed
+    	srand(time(NULL));
+    	
+    	if (floor % 5 == 0) {
+    		//boss floor
+    		encounter = encounters[(rand() % 10 + 7)];
+    	}
+    	else{
+    		//ordinary floor
+    		encounter = encounters[rand() % 7 + 0];
+    	}
     	
     	//code to do combat with the enemy
     	
