@@ -28,8 +28,8 @@ private:
     ByteArray data;
     //user stats are lvl, xp, hp, atk, def
     int userStats[5];
-    //user can have at most 3 equips
-    string userEquips[3];
+    //user can have at most 3 equips; empty by default but can change when data is loaded
+    string userEquips[3] = {"empty","empty","empty"};
     //user can have at most 3 skills
     string userSkills[3];
 
@@ -198,7 +198,7 @@ public:
     	
     	while(userStats[2] > 0&&encounterStats[0]>0){
     		//do battle
-    		ByteArray response = ByteArray("What will you do? (attack, skill, flee)");
+    		response = ByteArray("What will you do? (attack, skill, flee)");
     		try {socket.Write(response);}
     		catch (...) {
     			cout << "Battle failed (Server end)" <<endl;
@@ -243,7 +243,30 @@ public:
     	}
     	
     	//generate random loot
-    	
+    	int drop = ((rand() % 11 + 0) - 1);
+    	if (drop<0){
+    		//no drop
+    	}
+    	else{
+    		string loot = lootArray[drop];
+    		response = ByteArray("You obtained a "+loot+"!\nWould you like to equip?\n[0]"+userEquips[0]+"\n[1]"+userEquips[1]+"\n[2]"+userEquips[2]+"\n[3] discard the item");
+    		try {socket.Write(response);}
+    		catch (...) {
+    			cout << "Loot failed (Server end)" <<endl;
+    		}
+    		// Wait for user info
+		try {socket.Read(data);}
+		catch (...) {
+			cout << "Loot failed (Client end)" <<endl;
+		}
+    		if (stoi(data.ToString())==3){
+    			//discard the item
+    			loot = "empty";
+    		}
+    		else {
+    			userEquips[stoi(data.ToString())] = loot;
+    		}
+    	}
     	
     	//code for xp gain
     	if(floor%5==0){
