@@ -46,12 +46,10 @@ public:
     int enterDungeon(void){
     	//code to create randomized dungeon
     	
-    	int floors = 5; //minimum of 5 floors, max of 15
-    	
     	//create randomizer seed
     	srand(time(NULL));
     	
-    	floors += (rand() % 10 + 0);
+    	int floors = (rand() % 11 + 5); //minimum of 5 floors, max of 15
     	
     	ByteArray response = ByteArray("You have entered the dungeon.");
     	try {socket.Write(response);}
@@ -75,7 +73,7 @@ public:
     	
     	if (floor % 5 == 0) {
     		//boss floor
-    		encounter = encounters[(rand() % 10 + 7)];
+    		encounter = encounters[(rand() % 3 + 7)];
     	}
     	else{
     		//ordinary floor
@@ -346,6 +344,17 @@ public:
 			//save prompt before every boss floor
 			if((floor+1)%5==0){
 				saveData();
+			}
+			//allow the user to exit
+			response = ByteArray("Type \"done\" if you would like to exit");
+    			try {socket.Write(response);}
+    			catch (...) {
+    				cout << "exit prompt failed (Server end)" <<endl;
+    			}
+			// Wait for user info
+			try {socket.Read(data);}
+			catch (...) {
+				cout << "exit prompt failed (Client end)" <<endl;
 			}
 		}
 	}
