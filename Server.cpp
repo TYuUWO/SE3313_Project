@@ -17,13 +17,17 @@ namespace{
 	volatile bool typeYes = true;
 }
 
+namespace{
+	string lootArray[10] = {"shortsword", "axe", "dagger", "spear", "greatsword", "leather armor", "chain mail armor", "steel plate armor", "leather helmet", "steel helmet"};
+}
+
 class ClientThread : public Thread
 {
 private:
     Socket& socket;
     ByteArray data;
-    //user stats are lvl, hp, atk, def
-    int userStats[4];
+    //user stats are lvl, xp, hp, atk, def
+    int userStats[5];
     //user can have at most 3 equips
     string userEquips[3];
     //user can have at most 3 skills
@@ -186,16 +190,29 @@ public:
     	
     	//code to do combat with the enemy
     	
+    	
+    	
     	//generate random loot
+    	
     	
     	//code for xp gain
     	if(floor%5==0){
     		//boss floor gives 20xp
-    		
+    		userStats[1] += 20;
+    		while(userStats[1]>=15){
+    			//level up
+    			userStats[0] += 1;
+    			userStats[1] -= 15;
+    		}
     	}
     	else{
     		//normal encounter gives 5xp
-    		
+    		userStats[1] += 5;
+    		while(userStats[1]>=15){
+    			//level up
+    			userStats[0] += 1;
+    			userStats[1] -= 15;
+    		}
     	}
     	
     	return 0;
