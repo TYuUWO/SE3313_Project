@@ -7,14 +7,20 @@ using namespace std;
 int main(int argc, char** argv)
 {
 	sqlite3* DB;
-	std::string deleteTable = "DROP TABLE USER1;";
-	std::string sql= "CREATE TABLE USER1("
-			"name 	text NOT NULL, "
-			"value	text NOT NULL); ";
+	std::string deleteTable = "DROP TABLE stats;";
+	std::string sql = "CREATE TABLE stats("
+			"level INTEGER NOT NULL, "
+			"exp INTEGER NOT NULL, "
+			"hp INTEGER NOT NULL, "
+			"attack INTEGER NOT NULL, "
+			"defense INTEGER NOT NULL);";
+	
+	std::string insertTable = "INSERT INTO stats VALUES";
 	
 	int exit = 0;
 	exit = sqlite3_open("userDB.db", &DB);
 	char* messageError;
+	
 	exit = sqlite3_exec(DB, deleteTable.c_str(), NULL, 0, &messageError);
 	
 	if (exit != SQLITE_OK) {

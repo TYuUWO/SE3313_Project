@@ -26,6 +26,7 @@ class ClientThread : public Thread
 private:
     Socket& socket;
     ByteArray data;
+    sqlite3* DB;
     //user stats are lvl, xp, hp, atk, def
     int userStats[5];
     //user can have at most 3 equips
@@ -245,7 +246,87 @@ public:
     	return 0;
     }
     
-    virtual long ThreadMain()
+    int dbTask(string action){ // makes DB perform an exec task
+    	int exit = 0;
+    	char* messageError;
+    	exit = sqlite3_exec(DB, action.c_str(), NULL, 0, &messageError);
+	
+	if (exit != SQLITE_OK) {
+		std::cerr << "Error: Task not completed." << endl;
+		sqlite3_free(messageError);
+		
+	}
+	else {
+		std::cout << "Task is finished" << endl;
+	}
+	return 0;
+    }
+    
+    int loginUser(string username){
+    	int exit = 0;
+	string dbFile = "DB/" + username + ".db";
+	char* messageError;
+	exit = sqlite3_open(dbFile.c_str(), &DB); //c_str converts string to const char
+	
+	
+	if (exit != SQLITE_OK) {
+		std::cerr << "Error: Database not found." << endl;
+		sqlite3_free(messageError);
+		
+	}
+	else {
+		std::cout << "Database is open for " << username <<endl;
+	}
+	
+	//test if the user's data exists while creating a new database for a potential
+	// new user of the app
+	string addStats = "CREATE TABLE stats("
+			"level INTEGER NOT NULL, "
+			"exp INTEGER NOT NULL, "
+			"hp INTEGER NOT NULL, "
+			"attack INTEGER NOT NULL, "
+			"defense INTEGER NOT NULL);";
+			
+	exit = sqlite3_exec(DB, addStats.c_str(), NULL, 0, &messageError);
+	
+	if (exit != SQLITE_OK) {
+		std::cerr << "Error: Table is not added, or "<< username <<" already has data." << endl;
+		sqlite3_free(messageError);
+		
+	}
+	else { // If a table was added, update to level 1 values for stats, equips and skills for new user
+		std::cout << "Table Added Successfully" << endl;
+		
+		string insertStats = "INSERT INTO stats VALUES(1,0,5,5,5)"; //Stats initialize here;
+		string createEquips = "CREATE TABLE equips ("
+					"name TEXT NOT NULL) ";
+		string insertEquips = "INSERT INTO equips VALUES('empty')";
+		string createSkills = "CREATE TABLE skills ("
+					"name TEXT NOT NULL)";
+		string insertSkills = "INSERT INTO skills VALUES('empty')";
+		
+		dbTask(insertStats);
+		
+		dbTask(createEquips);
+		
+		dbTask(insertEquips);
+		dbTask(insertEquips);
+		dbTask(insertEquips);
+		
+		dbTask(createSkills);
+		
+		dbTask(insertSkills);
+		dbTask(insertSkills);
+		dbTask(insertSkills);
+									
+		
+	}
+	return 0;
+    }
+    
+    
+    ////////////////////////////Main Thread//////////////////////////////////////////////////////////////////////////////
+    virtual long ThreadMain() 
     {	
     	ByteArray response = ByteArray("Please enter your username: ");
     	//Prompt user login
@@ -260,7 +341,24 @@ public:
 	}
 	
 	//code for login process
+	string username = data.ToString();
+	loginUser(username);
+	//get database for the user
 	
+	
+	
+	 response = ByteArray("Ready to begin? ");
+    	//Prompt user login
+    	try {socket.Write(response);}
+    	catch (...) {
+    		cout << "Server fails " <<endl;
+    	}
+	// Wait for user info
+	try {socket.Read(data);}
+	catch (...) {
+		cout << "Client fails" <<endl;
+	}
+	cout << data.ToString() << endl;
 	//code for initialization
 	
 	while(data.ToString() != "done"){

@@ -23,6 +23,7 @@ int main(void)
 	getline(cin,ipAddress);
 	
 	// Create our socket
+	//localhost: 127.0.0.1
 	Socket socket(ipAddress, 3000);
 	//attempt to initiate connection
 	//if socket creation failed, set the flag and print the error
