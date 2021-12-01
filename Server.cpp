@@ -297,7 +297,7 @@ public:
 	else { // If a table was added, update to level 1 values for stats, equips and skills for new user
 		std::cout << "Table Added Successfully" << endl;
 		
-		string insertStats = "INSERT INTO stats VALUES(1,0,5,5,5)"; //Stats initialize here;
+		string insertStats = "INSERT INTO stats VALUES(0,0,15,4,4)"; //Stats initialize here;
 		string createEquips = "CREATE TABLE equips ("
 					"name TEXT NOT NULL) ";
 		string insertEquips = "INSERT INTO equips VALUES('empty')";
@@ -324,6 +324,10 @@ public:
 	return 0;
     }
     
+	int getUserData(string username) {
+		
+	return 0;
+	}
     
     ////////////////////////////Main Thread//////////////////////////////////////////////////////////////////////////////
     virtual long ThreadMain() 
@@ -343,7 +347,8 @@ public:
 	//code for login process
 	string username = data.ToString();
 	loginUser(username);
-	//get database for the user
+	
+	getUserData(username);
 	
 	
 	
@@ -438,43 +443,6 @@ public:
 
 int main(void)
 {
-	
-    std::cout << "I am a server." << std::endl;
-	
-	
-	sqlite3* DB;
-	std::string deleteTable = "DROP TABLE USER1;";
-	std::string sql= "CREATE TABLE USER1("
-			"name 	text NOT NULL, "
-			"value	text NOT NULL); ";
-	
-	int exit = 0;
-	exit = sqlite3_open("userDB.db", &DB);
-	char* messageError;
-	exit = sqlite3_exec(DB, deleteTable.c_str(), NULL, 0, &messageError);
-	
-	if (exit != SQLITE_OK) {
-		std::cerr << "Error: Table is not deleted." << endl;
-		sqlite3_free(messageError);
-		
-	}
-	else {
-		std::cout << "Table Deleted Successfully" << endl;
-	}
-	///////////////////////////////////////////////////////////////////apple
-	
-	exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messageError);
-	
-	if (exit != SQLITE_OK) {
-		std::cerr << "Error: Table is not created." << endl;
-		sqlite3_free(messageError);
-		
-	}
-	else {
-		std::cout << "Table Created Successfully" << endl;
-	}
-	
-	sqlite3_close(DB);
 	
 	
     std::cout << "Press 'enter' to terminate" << std::endl;
