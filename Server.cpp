@@ -35,11 +35,68 @@ public:
     
     int enterDungeon(void){
     	//code to create randomized dungeon
+    	
+    	int floors = 5; //minimum of 5 floors, max of 15
+    	
+    	//create randomizer seed
+    	srand(time(NULL));
+    	
+    	floors += (rand() % 10 + 0);
+    	
+    	ByteArray response = ByteArray("You have entered the dungeon.");
+    	try {socket.Write(response);}
+    	catch (...) {
+    		cout << "Entry failed (Server end)" <<endl;
+    	}
+    	
     	return 0;
     }
     
-    int enemyEncounter(void){
+    int enemyEncounter(int floor){
     	//code to generate a random enemy
+    	
+    	string encounters[10] = {"goblin", "slime", "skeleton", "zombie", "giant snake", "orc", "wraith", "demon", "dragon", "behemoth"};
+    	string encounter;
+    	//stats are hp, attack, defense, speed (determine how likely monster is to go first, player speed fixed)
+    	int encounterStats[3] = {0,0,0,0};
+    	
+    	//create randomizer seed
+    	srand(time(NULL));
+    	
+    	if (floor % 5 == 0) {
+    		//boss floor
+    		encounter = encounters[(rand() % 10 + 7)];
+    	}
+    	else{
+    		//ordinary floor
+    		encounter = encounters[rand() % 7 + 0];
+    	}
+    	
+    	//setup encounter according to enemy; use the same seed for convenience
+    	if (encounter = "goblin"){
+    		
+    	}
+    	else if (encounter = "slime"){
+    	}
+    	else if (encounter = "skeleton"){
+    	}
+    	else if (encounter = "zombie"){
+    	}
+    	else if (encounter = "giant snake"){
+    	}
+    	else if (encounter = "orc"){
+    		//strongest normal monster; stats should be close to a boss monster's stats
+    	}
+    	else if (encounter = "wraith"){
+    	}
+    	else if (encounter = "demon"){
+    	}
+    	else if (encounter = "dragon"){
+    	}
+    	else{
+    		//this is the behemoth; this monster is stronger than all other monsters
+    		
+    	}
     	
     	//code to do combat with the enemy
     	
