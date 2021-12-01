@@ -338,13 +338,24 @@ public:
 		//initialize dungeon
 		int totalFloors = enterDungeon();
 		int floor = 1;
-		while(floor<= totalFloors){
+		int battles = 0;
+		//create randomizer seed
+    		srand(time(NULL));
+
+		while(floor< totalFloors){
 			//dungeon needs to be cleared to exit this loop
 			enemyEncounter(floor);
+			battles += 1;
+			if((rand() % 4 + 0)<battles){
+				battles = 0;
+				floor += 1;
+			}
+			
 			//save prompt before every boss floor
 			if((floor+1)%5==0){
 				saveData();
 			}
+			
 			//allow the user to exit
 			response = ByteArray("Type \"done\" if you would like to exit");
     			try {socket.Write(response);}
@@ -355,6 +366,23 @@ public:
 			try {socket.Read(data);}
 			catch (...) {
 				cout << "exit prompt failed (Client end)" <<endl;
+			}
+			if (data.ToString() == "done"){
+				break;
+			}
+		}
+		//dungeon clear
+		if (floor > totalFloors){
+			saveData();
+			response = ByteArray("You cleared this dungeon!\nWould you like to exit? (type \"done\" to exit, otherwise go again)");
+    			try {socket.Write(response);}
+    			catch (...) {
+    				cout << "clear prompt failed (Server end)" <<endl;
+    			}
+			// Wait for user info
+			try {socket.Read(data);}
+			catch (...) {
+				cout << "clear prompt failed (Client end)" <<endl;
 			}
 		}
 	}
