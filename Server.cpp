@@ -74,31 +74,115 @@ public:
     	
     	//setup encounter according to enemy; use the same seed for convenience
     	if (encounter = "goblin"){
-    		
+    		//set hp
+    		encounterStats[0] = 10;
+    		//set atk
+    		encounterStats[1] = 3;
+    		//set def
+    		encounterStats[2] = 4;
+    		//set spd
+    		encounterStats[3] = 1;
     	}
     	else if (encounter = "slime"){
+    		//set hp
+    		encounterStats[0] = 5;
+    		//set atk
+    		encounterStats[1] = 2;
+    		//set def
+    		encounterStats[2] = 2;
+    		//set spd
+    		encounterStats[3] = 2;
     	}
     	else if (encounter = "skeleton"){
+    		//set hp
+    		encounterStats[0] = 11;
+    		//set atk
+    		encounterStats[1] = 2;
+    		//set def
+    		encounterStats[2] = 5;
+    		//set spd
+    		encounterStats[3] = 1;
     	}
     	else if (encounter = "zombie"){
+    		//set hp
+    		encounterStats[0] = 9;
+    		//set atk
+    		encounterStats[1] = 5;
+    		//set def
+    		encounterStats[2] = 5;
+    		//set spd
+    		encounterStats[3] = 1;
     	}
     	else if (encounter = "giant snake"){
+    		//set hp
+    		encounterStats[0] = 7;
+    		//set atk
+    		encounterStats[1] = 4;
+    		//set def
+    		encounterStats[2] = 2;
+    		//set spd
+    		encounterStats[3] = 3;
     	}
     	else if (encounter = "orc"){
     		//strongest normal monster; stats should be close to a boss monster's stats
+    		//set hp
+    		encounterStats[0] = 15;
+    		//set atk
+    		encounterStats[1] = 7;
+    		//set def
+    		encounterStats[2] = 7;
+    		//set spd
+    		encounterStats[3] = 1;
     	}
     	else if (encounter = "wraith"){
+    		//set hp
+    		encounterStats[0] = 5;
+    		//set atk
+    		encounterStats[1] = 5;
+    		//set def
+    		encounterStats[2] = 3;
+    		//set spd
+    		encounterStats[3] = 3;
     	}
     	else if (encounter = "demon"){
+    		//boss monster
+    		//set hp
+    		encounterStats[0] = 20;
+    		//set atk
+    		encounterStats[1] = 7;
+    		//set def
+    		encounterStats[2] = 5;
+    		//set spd
+    		encounterStats[3] = 3;
     	}
     	else if (encounter = "dragon"){
+    		//boss monster
+    		//set hp
+    		encounterStats[0] = 20;
+    		//set atk
+    		encounterStats[1] = 7;
+    		//set def
+    		encounterStats[2] = 7;
+    		//set spd
+    		encounterStats[3] = 2;
     	}
     	else{
     		//this is the behemoth; this monster is stronger than all other monsters
-    		
+    		//set hp
+    		encounterStats[0] = 20;
+    		//set atk
+    		encounterStats[1] = 10;
+    		//set def
+    		encounterStats[2] = 10;
+    		//set spd
+    		encounterStats[3] = 0;
     	}
     	
     	//code to do combat with the enemy
+    	
+    	//generate random loot
+    	
+    	//code for xp gain
     	
     	return 0;
     }
