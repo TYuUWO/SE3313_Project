@@ -29,8 +29,8 @@ private:
     sqlite3* DB;
     //user stats are lvl, xp, hp, atk, def
     int userStats[5];
-    //user can have at most 3 equips
-    string userEquips[3];
+    //user can have at most 3 equips; empty by default but can change when data is loaded
+    string userEquips[3] = {"empty","empty","empty"};
     //user can have at most 3 skills
     string userSkills[3];
 
@@ -47,12 +47,10 @@ public:
     int enterDungeon(void){
     	//code to create randomized dungeon
     	
-    	int floors = 5; //minimum of 5 floors, max of 15
-    	
     	//create randomizer seed
     	srand(time(NULL));
     	
-    	floors += (rand() % 10 + 0);
+    	int floors = (rand() % 11 + 5); //minimum of 5 floors, max of 15
     	
     	ByteArray response = ByteArray("You have entered the dungeon.");
     	try {socket.Write(response);}
@@ -76,7 +74,7 @@ public:
     	
     	if (floor % 5 == 0) {
     		//boss floor
-    		encounter = encounters[(rand() % 10 + 7)];
+    		encounter = encounters[(rand() % 3 + 7)];
     	}
     	else{
     		//ordinary floor
@@ -191,10 +189,83 @@ public:
     	
     	//code to do combat with the enemy
     	
+    	ByteArray response = ByteArray("You encountered a "+encounter+"!");
+    		try {socket.Write(response);}
+    		catch (...) {
+    			cout << "Battle failed (Server end)" <<endl;
+    		}
     	
+    	while(userStats[2] > 0&&encounterStats[0]>0){
+    		//do battle
+    		response = ByteArray("What will you do? (attack, skill, flee)");
+    		try {socket.Write(response);}
+    		catch (...) {
+    			cout << "Battle failed (Server end)" <<endl;
+    		}
+    		try {socket.Read(data);}
+    		catch (...) {
+    			cout << "Battle failed (Client end)" <<endl;
+    		}
+    		if (data.ToString()=="attack"){
+    			//damage = player attack - enemy def
+    			//order of attacks based on enemy spd stat
+    			if((rand() % 4 + 0)>encounterStats[3]){
+    				//attack first
+    				
+    			}
+    			else{
+    				//take damage first
+    			}
+    		}
+    		else if(data.ToString() == "skill"){
+    			//display skills
+    			
+    			//await response
+    			
+    			//skill activates
+    		}
+    		else{
+    			//flee success based on enemy spd stat
+    			if((rand() % 4 + 0)>encounterStats[3]){
+    				//flee successfully
+    				response = ByteArray("You fled successfully");
+    				try {socket.Write(response);}
+    				catch (...) {
+    					cout << "Battle failed (Server end)" <<endl;
+    				}
+    				return 0;
+    			}
+    			else{
+    				//take damage
+    			}
+    		}
+    	}
     	
     	//generate random loot
-    	
+    	int drop = ((rand() % 11 + 0) - 1);
+    	if (drop<0){
+    		//no drop
+    	}
+    	else{
+    		string loot = lootArray[drop];
+    		response = ByteArray("You obtained a "+loot+"!\nWould you like to equip?\n[0]"+userEquips[0]+"\n[1]"+userEquips[1]+"\n[2]"+userEquips[2]+"\n[3] discard the item");
+    		try {socket.Write(response);}
+    		catch (...) {
+    			cout << "Loot failed (Server end)" <<endl;
+    		}
+    		// Wait for user info
+		try {socket.Read(data);}
+		catch (...) {
+			cout << "Loot failed (Client end)" <<endl;
+		}
+    		if (stoi(data.ToString())==3){
+    			//discard the item
+    			loot = "empty";
+    		}
+    		else {
+    			userEquips[stoi(data.ToString())] = loot;
+    		}
+    	}
     	
     	//code for xp gain
     	if(floor%5==0){
@@ -370,12 +441,51 @@ public:
 		//initialize dungeon
 		int totalFloors = enterDungeon();
 		int floor = 1;
-		while(floor<= totalFloors){
+		int battles = 0;
+		//create randomizer seed
+    		srand(time(NULL));
+
+		while(floor< totalFloors){
 			//dungeon needs to be cleared to exit this loop
 			enemyEncounter(floor);
+			battles += 1;
+			if((rand() % 4 + 0)<battles){
+				battles = 0;
+				floor += 1;
+			}
+			
 			//save prompt before every boss floor
 			if((floor+1)%5==0){
 				saveData();
+			}
+			
+			//allow the user to exit
+			response = ByteArray("Type \"done\" if you would like to exit");
+    			try {socket.Write(response);}
+    			catch (...) {
+    				cout << "exit prompt failed (Server end)" <<endl;
+    			}
+			// Wait for user info
+			try {socket.Read(data);}
+			catch (...) {
+				cout << "exit prompt failed (Client end)" <<endl;
+			}
+			if (data.ToString() == "done"){
+				break;
+			}
+		}
+		//dungeon clear
+		if (floor > totalFloors){
+			saveData();
+			response = ByteArray("You cleared this dungeon!\nWould you like to exit? (type \"done\" to exit, otherwise go again)");
+    			try {socket.Write(response);}
+    			catch (...) {
+    				cout << "clear prompt failed (Server end)" <<endl;
+    			}
+			// Wait for user info
+			try {socket.Read(data);}
+			catch (...) {
+				cout << "clear prompt failed (Client end)" <<endl;
 			}
 		}
 	}
