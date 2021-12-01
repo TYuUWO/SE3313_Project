@@ -11,9 +11,11 @@ using namespace std;
 
 int main(void)
 {
+	ByteArray data;
 	string inputData;
 	bool socketCreated = true;
 	string ipAddress;
+	
 	// Welcome the user 
 	std::cout << "SE3313 Lab 3 Client" << std::endl;
 	cout << "Enter the server IP address: " << endl;
@@ -39,15 +41,15 @@ int main(void)
 			break;
 		}
 		//print the received data
-		std::cout << data.ToString() <<endl;
+		std::cout << data.ToString() << endl;
 		
 		getline(cin,inputData);
 	
 		//convert inputData to ByteArray data
-		ByteArray data(inputData);
+		ByteArray response(inputData);
 
 		//To write to server socket and read from socket. You may use ByteArray 
-		socket.Write(data);
+		socket.Write(response);
 		
 	}
 	
