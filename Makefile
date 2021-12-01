@@ -1,4 +1,4 @@
-all: Client Server
+all: Client Server initDB
 
 Client : Client.o thread.o socket.o Blockable.o
 	g++ -o Client Client.o thread.o socket.o Blockable.o -pthread -l rt
@@ -6,8 +6,8 @@ Client : Client.o thread.o socket.o Blockable.o
 Client.o : Client.cpp socket.h
 	g++ -c Client.cpp -std=c++11
 
-Server : Server.o thread.o socket.o socketserver.o Blockable.o
-	g++ -o Server Server.o thread.o socket.o socketserver.o Blockable.o -pthread -l rt
+Server : Server.o thread.o socket.o socketserver.o Blockable.o sqlite3.h
+	g++ -o Server Server.o thread.o socket.o socketserver.o Blockable.o -pthread -l rt -lsqlite3
 
 Blockable.o : Blockable.h Blockable.cpp
 	g++ -c Blockable.cpp -std=c++11
@@ -23,3 +23,8 @@ socket.o : socket.cpp socket.h
 
 socketserver.o : socketserver.cpp socket.h socketserver.h
 	g++ -c socketserver.cpp -std=c++11
+	
+initDB : initDB.cpp sqlite3.h
+	g++ -o initDB initDB.cpp -lsqlite3
+	
+

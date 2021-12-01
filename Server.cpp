@@ -1,5 +1,6 @@
 #include "thread.h"
 #include "socketserver.h"
+#include "sqlite3.h"
 #include <stdlib.h>
 #include <time.h>
 #include <list>
@@ -45,6 +46,33 @@ public:
     	return 0;
     }
     
+    int saveData(void){
+    	//prompt user to save
+    	ByteArray response = ByteArray("Would you like to save? (y/n): ");
+    	try {socket.Write(response);}
+    	catch (...) {
+    		cout << "Save failed (Server end)" <<endl;
+    	}
+	// Wait for user info
+	try {socket.Read(data);}
+	catch (...) {
+		cout << "Save failed (Client end)" <<endl;
+	}
+	response = ByteArray("Saving... please wait");
+	try {socket.Write(response);}
+    	catch (...) {
+    		cout << "Save failed (Server end)" <<endl;
+    	}
+    	//code to save data
+    	
+    	response = ByteArray("Saved");
+	try {socket.Write(response);}
+    	catch (...) {
+    		cout << "Save failed (Server end)" <<endl;
+    	}
+    	return 0;
+    }
+    
     virtual long ThreadMain()
     {
     	ByteArray response = ByteArray("Please enter your username: ");
@@ -54,7 +82,7 @@ public:
     		cout << "Login failed (Server end)" <<endl;
     	}
 	// Wait for user info
-	try {socket.Read(data)}
+	try {socket.Read(data);}
 	catch (...) {
 		cout << "Login failed (Client end)" <<endl;
 	}
@@ -128,7 +156,42 @@ int main(void)
 {
 	
     std::cout << "I am a server." << std::endl;
-	sData = "Hello from server.";
+	
+	
+	sqlite3* DB;
+	std::string deleteTable = "DROP TABLE USER1;";
+	std::string sql= "CREATE TABLE USER1("
+			"name 	text NOT NULL, "
+			"value	text NOT NULL); ";
+	
+	int exit = 0;
+	exit = sqlite3_open("userDB.db", &DB);
+	char* messageError;
+	exit = sqlite3_exec(DB, deleteTable.c_str(), NULL, 0, &messageError);
+	
+	if (exit != SQLITE_OK) {
+		std::cerr << "Error: Table is not deleted." << endl;
+		sqlite3_free(messageError);
+		
+	}
+	else {
+		std::cout << "Table Deleted Successfully" << endl;
+	}
+	///////////////////////////////////////////////////////////////////apple
+	
+	exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messageError);
+	
+	if (exit != SQLITE_OK) {
+		std::cerr << "Error: Table is not created." << endl;
+		sqlite3_free(messageError);
+		
+	}
+	else {
+		std::cout << "Table Created Successfully" << endl;
+	}
+	
+	sqlite3_close(DB);
+	
 	
     std::cout << "Press 'enter' to terminate" << std::endl;
     // Create our server

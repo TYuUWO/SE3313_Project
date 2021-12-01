@@ -11,18 +11,19 @@ using namespace std;
 
 int main(void)
 {
-	ByteArray data;
 	string inputData;
 	bool socketCreated = true;
 	string ipAddress;
 	
+
+	ByteArray data;
 	// Welcome the user 
 	std::cout << "SE3313 Lab 3 Client" << std::endl;
 	cout << "Enter the server IP address: " << endl;
 	getline(cin,ipAddress);
 	
 	// Create our socket
-	Socket socket("127.0.0.1", 3000);
+	Socket socket(ipAddress, 3000);
 	//attempt to initiate connection
 	//if socket creation failed, set the flag and print the error
 	try {socket.Open();}
