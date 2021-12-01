@@ -190,7 +190,57 @@ public:
     	
     	//code to do combat with the enemy
     	
+    	ByteArray response = ByteArray("You encountered a "+encounter+"!");
+    		try {socket.Write(response);}
+    		catch (...) {
+    			cout << "Battle failed (Server end)" <<endl;
+    		}
     	
+    	while(userStats[2] > 0&&encounterStats[0]>0){
+    		//do battle
+    		ByteArray response = ByteArray("What will you do? (attack, skill, flee)");
+    		try {socket.Write(response);}
+    		catch (...) {
+    			cout << "Battle failed (Server end)" <<endl;
+    		}
+    		try {socket.Read(data);}
+    		catch (...) {
+    			cout << "Battle failed (Client end)" <<endl;
+    		}
+    		if (data.ToString()=="attack"){
+    			//damage = player attack - enemy def
+    			//order of attacks based on enemy spd stat
+    			if((rand() % 4 + 0)>encounterStats[3]){
+    				//attack first
+    				
+    			}
+    			else{
+    				//take damage first
+    			}
+    		}
+    		else if(data.ToString() == "skill"){
+    			//display skills
+    			
+    			//await response
+    			
+    			//skill activates
+    		}
+    		else{
+    			//flee success based on enemy spd stat
+    			if((rand() % 4 + 0)>encounterStats[3]){
+    				//flee successfully
+    				response = ByteArray("You fled successfully");
+    				try {socket.Write(response);}
+    				catch (...) {
+    					cout << "Battle failed (Server end)" <<endl;
+    				}
+    				return 0;
+    			}
+    			else{
+    				//take damage
+    			}
+    		}
+    	}
     	
     	//generate random loot
     	
