@@ -22,6 +22,12 @@ class ClientThread : public Thread
 private:
     Socket& socket;
     ByteArray data;
+    //user stats are lvl, hp, atk, def
+    int userStats[4];
+    //user can have at most 3 equips
+    string userEquips[3];
+    //user can have at most 3 skills
+    string userSkills[3];
 
 public:
     ClientThread(Socket& socket)
@@ -183,6 +189,14 @@ public:
     	//generate random loot
     	
     	//code for xp gain
+    	if(floor%5==0){
+    		//boss floor gives 20xp
+    		
+    	}
+    	else{
+    		//normal encounter gives 5xp
+    		
+    	}
     	
     	return 0;
     }
@@ -215,7 +229,7 @@ public:
     }
     
     virtual long ThreadMain()
-    {
+    {	
     	ByteArray response = ByteArray("Please enter your username: ");
     	//Prompt user login
     	try {socket.Write(response);}
