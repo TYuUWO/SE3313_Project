@@ -49,7 +49,7 @@ public:
     		cout << "Entry failed (Server end)" <<endl;
     	}
     	
-    	return 0;
+    	return floors;
     }
     
     int enemyEncounter(int floor){
@@ -58,7 +58,7 @@ public:
     	string encounters[10] = {"goblin", "slime", "skeleton", "zombie", "giant snake", "orc", "wraith", "demon", "dragon", "behemoth"};
     	string encounter;
     	//stats are hp, attack, defense, speed (determine how likely monster is to go first, player speed fixed)
-    	int encounterStats[3] = {0,0,0,0};
+    	int encounterStats[4] = {0,0,0,0};
     	
     	//create randomizer seed
     	srand(time(NULL));
@@ -73,7 +73,7 @@ public:
     	}
     	
     	//setup encounter according to enemy; use the same seed for convenience
-    	if (encounter = "goblin"){
+    	if (encounter == "goblin"){
     		//set hp
     		encounterStats[0] = 10;
     		//set atk
@@ -83,7 +83,7 @@ public:
     		//set spd
     		encounterStats[3] = 1;
     	}
-    	else if (encounter = "slime"){
+    	else if (encounter == "slime"){
     		//set hp
     		encounterStats[0] = 5;
     		//set atk
@@ -93,7 +93,7 @@ public:
     		//set spd
     		encounterStats[3] = 2;
     	}
-    	else if (encounter = "skeleton"){
+    	else if (encounter == "skeleton"){
     		//set hp
     		encounterStats[0] = 11;
     		//set atk
@@ -103,7 +103,7 @@ public:
     		//set spd
     		encounterStats[3] = 1;
     	}
-    	else if (encounter = "zombie"){
+    	else if (encounter == "zombie"){
     		//set hp
     		encounterStats[0] = 9;
     		//set atk
@@ -113,7 +113,7 @@ public:
     		//set spd
     		encounterStats[3] = 1;
     	}
-    	else if (encounter = "giant snake"){
+    	else if (encounter == "giant snake"){
     		//set hp
     		encounterStats[0] = 7;
     		//set atk
@@ -123,7 +123,7 @@ public:
     		//set spd
     		encounterStats[3] = 3;
     	}
-    	else if (encounter = "orc"){
+    	else if (encounter == "orc"){
     		//strongest normal monster; stats should be close to a boss monster's stats
     		//set hp
     		encounterStats[0] = 15;
@@ -134,7 +134,7 @@ public:
     		//set spd
     		encounterStats[3] = 1;
     	}
-    	else if (encounter = "wraith"){
+    	else if (encounter == "wraith"){
     		//set hp
     		encounterStats[0] = 5;
     		//set atk
@@ -144,7 +144,7 @@ public:
     		//set spd
     		encounterStats[3] = 3;
     	}
-    	else if (encounter = "demon"){
+    	else if (encounter == "demon"){
     		//boss monster
     		//set hp
     		encounterStats[0] = 20;
@@ -155,7 +155,7 @@ public:
     		//set spd
     		encounterStats[3] = 3;
     	}
-    	else if (encounter = "dragon"){
+    	else if (encounter == "dragon"){
     		//boss monster
     		//set hp
     		encounterStats[0] = 20;
@@ -231,6 +231,20 @@ public:
 	//code for login process
 	
 	//code for initialization
+	
+	while(data.ToString() != "done"){
+		//initialize dungeon
+		int totalFloors = enterDungeon();
+		int floor = 1;
+		while(floor<= totalFloors){
+			//dungeon needs to be cleared to exit this loop
+			enemyEncounter(floor);
+			//save prompt before every boss floor
+			if((floor+1)%5==0){
+				saveData();
+			}
+		}
+	}
 	
 	do {
         socket.Read(data);
