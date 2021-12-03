@@ -198,7 +198,7 @@ public:
     	//initialize battle stats that are affected by items equipped
     	int battleStats[2] = {userStats[3],userStats[4]};
     	
-    	for(int i=0, i<(sizeof(userEquips));i++){
+    	for(int i=0; i<(sizeof(userEquips));i++){
     		//define bonuses for each equip
     		if(userEquips[i]=="shortsword"){}
     		else if(userEquips[i]=="axe"){}
@@ -211,7 +211,7 @@ public:
     		else if(userEquips[i]=="leather helmet"){}
     		else if(userEquips[i]=="steel helmet"){}
     		else //empty case; do nothing
-    		
+    			;
     	}
     	
     	while(userStats[2] > 0&&encounterStats[0]>0){
@@ -230,35 +230,51 @@ public:
     			//order of attacks based on enemy spd stat
     			if((rand() % 4 + 0)>encounterStats[3]){
     				//attack first
-    				int damage = (battleStats[0] + rand() % 4 + 0) - encounterStats[2];
+    				int damage = ((battleStats[0] + rand() % 4 + 0) - encounterStats[2]);
     				//don't allow negative damage
-    				if (damage<0){damage=0}
+    				if (damage<0){damage=0;}
     				encounterStats[0] -= damage;
+    				response = ByteArray("you dealt "+(to_string(damage))+" damage!");
+    				try {socket.Write(response);}
+    				catch (...) {
+    					cout << "Battle failed (Server end)" <<endl;
+    				}
     				//monster defeated before it can attack
     				if(encounterStats[0]<=0){break;}
     				else{
-    					int dTaken = (encounterStats[2] + rand() % 4 + 0) - battleStats[1]);
+    					int dTaken = ((encounterStats[2] + rand() % 4 + 0) - battleStats[1]);
     					//don't allow negative damage
-    					if (dTaken<0){dTaken=0}
+    					if (dTaken<0){dTaken=0;}
     					userStats[0] -= dTaken;
+    					if(userStats[2]<=0) {return 1;}
+    					response = ByteArray("you took "+(to_string(dTaken))+" damage!\nyou have "+(to_string(userStats[2]))+" hp remaining");
+    					try {socket.Write(response);}
+    						catch (...) {
+    					cout << "Battle failed (Server end)" <<endl;
+    					}
     				}
     			}
     			else{
     				//take damage first
-    				int dTaken = (encounterStats[2] + rand() % 4 + 0) - battleStats[1]);
+    				int dTaken = ((encounterStats[2] + rand() % 4 + 0) - battleStats[1]);
     				//don't allow negative damage
-    				if (dTaken<0){dTaken=0}
+    				if (dTaken<0){dTaken=0;}
     				userStats[2] -= dTaken;
+    				response = ByteArray("you took "+(to_string(dTaken))+" damage!\nyou have "+(to_string(userStats[2]))+" hp remaining");
+    					try {socket.Write(response);}
+    						catch (...) {
+    					cout << "Battle failed (Server end)" <<endl;
     				//user defeated before they can attack
-    				if(userstats[2]<=0) {break;}
+    				if(userStats[2]<=0) {return 1;}
     				else{
-    					int damage = (battleStats[0] + rand() % 4 + 0) - encounterStats[2];
+    					int damage = ((battleStats[0] + rand() % 4 + 0) - encounterStats[2]);
     					//don't allow negative damage
-    					if (damage<0){damage=0}
+    					if (damage<0){damage=0;}
     					encounterStats[0] -= damage;
     				}
     			}
     		}
+    	}
     		else if(data.ToString() == "skill"){
     			//display skills
     			
@@ -279,10 +295,17 @@ public:
     			}
     			else{
     				//take damage
-    				int dTaken = (encounterStats[2] + rand() % 4 + 0) - battleStats[1]);
+    				int dTaken = ((encounterStats[2] + rand() % 4 + 0) - battleStats[1]);
     				//don't allow negative damage
-    				if (dTaken<0){dTaken=0}
+    				if (dTaken<0){dTaken=0;}
     				userStats[2] -= dTaken;
+    				response = ByteArray("you took "+(to_string(dTaken))+" damage!\nyou have "+(to_string(userStats[2]))+" hp remaining");
+    				try {socket.Write(response);}
+    				catch (...) {
+    					cout << "Battle failed (Server end)" <<endl;
+    				}
+    				//user defeated before they can attack
+    				if(userStats[2]<=0) {return 1;}
     			}
     		}
     	}
@@ -316,20 +339,48 @@ public:
     	//code for xp gain
     	if(floor%5==0){
     		//boss floor gives 20xp
+    		ByteArray response = ByteArray("You gained 20 exp!");
+    		try {socket.Write(response);}
+    		catch (...) {
+    			cout << "xp failed (Server end)" <<endl;
+    		}
     		userStats[1] += 20;
     		while(userStats[1]>=15){
     			//level up
     			userStats[0] += 1;
     			userStats[1] -= 15;
+    			userStats[2] += 10;
+    			//randomly increase a stat between hp,atk,def
+    			srand(time(NULL));
+    			userStats[2 + (rand() % 3 + 0)] += 1;
+    			ByteArray response = ByteArray("You leveled up!");
+    			try {socket.Write(response);}
+    			catch (...) {
+    				cout << "level failed (Server end)" <<endl;
+    			}
     		}
     	}
     	else{
     		//normal encounter gives 5xp
     		userStats[1] += 5;
+    		ByteArray response = ByteArray("You gained 5 exp!");
+    		try {socket.Write(response);}
+    		catch (...) {
+    			cout << "xp failed (Server end)" <<endl;
+    		}
     		while(userStats[1]>=15){
     			//level up
     			userStats[0] += 1;
     			userStats[1] -= 15;
+    			userStats[2] += 10;
+    			//randomly increase a stat between hp,atk,def
+    			srand(time(NULL));
+    			userStats[2 + (rand() % 3 + 0)] += 1;
+    			ByteArray response = ByteArray("You leveled up!");
+    			try {socket.Write(response);}
+    			catch (...) {
+    				cout << "level failed (Server end)" <<endl;
+    			}
     		}
     	}
     	
@@ -493,13 +544,21 @@ public:
 
 		while(floor< totalFloors){
 			//dungeon needs to be cleared to exit this loop
-			enemyEncounter(floor);
+			bool defeat = enemyEncounter(floor);
 			battles += 1;
 			if((rand() % 4 + 0)<battles){
 				battles = 0;
 				floor += 1;
 			}
-			
+			if (defeat){
+				response = ByteArray("you died!");
+    				try {socket.Write(response);}
+    				catch (...) {
+    					cout << "Battle failed (Server end)" <<endl;
+    				}
+    				data = ByteArray("done");
+    				break;
+			}
 			//save prompt before every boss floor
 			if((floor+1)%5==0){
 				saveData();
@@ -535,21 +594,6 @@ public:
 			}
 		}
 	}
-	
-	do {
-        socket.Read(data);
-
-        //Convert it to a string and capitalize the string
-        string str = data.ToString();
-        transform(str.begin(), str.end(), str.begin(), ::toupper);
-        
-        //Convert it back to a ByteArray type
-        ByteArray response = ByteArray(str);
-        
-        // Send it back
-        socket.Write(response);
-        }
-        while (data.ToString() !="done");
 	return 1;
     }
 };
