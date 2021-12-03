@@ -19,6 +19,7 @@ namespace{
 
 namespace{
 	string lootArray[10] = {"shortsword", "axe", "dagger", "spear", "greatsword", "leather armor", "chain mail armor", "steel plate armor", "leather helmet", "steel helmet"};
+	string skillArray[10];
 }
 
 class ClientThread : public Thread
@@ -28,7 +29,7 @@ private:
     ByteArray data;
     sqlite3* DB;
     //user stats are lvl, xp, hp, atk, def
-    int userStats[5];
+    int userStats[5] = {0,0,15,4,4};
     //user can have at most 3 equips; empty by default but can change when data is loaded
     string userEquips[3] = {"empty","empty","empty"};
     //user can have at most 3 skills
@@ -194,6 +195,24 @@ public:
     		catch (...) {
     			cout << "Battle failed (Server end)" <<endl;
     		}
+    	//initialize battle stats that are affected by items equipped
+    	int battleStats[2] = {userStats[3],userStats[4]};
+    	
+    	for(int i=0, i<(sizeof(userEquips));i++){
+    		//define bonuses for each equip
+    		if(userEquips[i]=="shortsword"){}
+    		else if(userEquips[i]=="axe"){}
+    		else if(userEquips[i]=="dagger"){}
+    		else if(userEquips[i]=="spear"){}
+    		else if(userEquips[i]=="greatsword"){}
+    		else if(userEquips[i]=="leather armor"){}
+    		else if(userEquips[i]=="chain mail armor"){}
+    		else if(userEquips[i]=="steel plate armor"){}
+    		else if(userEquips[i]=="leather helmet"){}
+    		else if(userEquips[i]=="steel helmet"){}
+    		else //empty case; do nothing
+    		
+    	}
     	
     	while(userStats[2] > 0&&encounterStats[0]>0){
     		//do battle
@@ -207,14 +226,37 @@ public:
     			cout << "Battle failed (Client end)" <<endl;
     		}
     		if (data.ToString()=="attack"){
-    			//damage = player attack - enemy def
+    			//damage = roll rng for player attack - enemy def
     			//order of attacks based on enemy spd stat
     			if((rand() % 4 + 0)>encounterStats[3]){
     				//attack first
-    				
+    				int damage = (battleStats[0] + rand() % 4 + 0) - encounterStats[2];
+    				//don't allow negative damage
+    				if (damage<0){damage=0}
+    				encounterStats[0] -= damage;
+    				//monster defeated before it can attack
+    				if(encounterStats[0]<=0){break;}
+    				else{
+    					int dTaken = (encounterStats[2] + rand() % 4 + 0) - battleStats[1]);
+    					//don't allow negative damage
+    					if (dTaken<0){dTaken=0}
+    					userStats[0] -= dTaken;
+    				}
     			}
     			else{
     				//take damage first
+    				int dTaken = (encounterStats[2] + rand() % 4 + 0) - battleStats[1]);
+    				//don't allow negative damage
+    				if (dTaken<0){dTaken=0}
+    				userStats[2] -= dTaken;
+    				//user defeated before they can attack
+    				if(userstats[2]<=0) {break;}
+    				else{
+    					int damage = (battleStats[0] + rand() % 4 + 0) - encounterStats[2];
+    					//don't allow negative damage
+    					if (damage<0){damage=0}
+    					encounterStats[0] -= damage;
+    				}
     			}
     		}
     		else if(data.ToString() == "skill"){
@@ -237,6 +279,10 @@ public:
     			}
     			else{
     				//take damage
+    				int dTaken = (encounterStats[2] + rand() % 4 + 0) - battleStats[1]);
+    				//don't allow negative damage
+    				if (dTaken<0){dTaken=0}
+    				userStats[2] -= dTaken;
     			}
     		}
     	}
