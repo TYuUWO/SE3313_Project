@@ -42,6 +42,9 @@ int main(void)
 			cout << "Server connection terminated" <<endl;
 			break;
 		}
+		if (data.ToString() == "\nyou died!"){
+			break;
+		}
 		//print the received data
 		std::cout << data.ToString() << endl;
 		

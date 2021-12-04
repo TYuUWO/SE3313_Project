@@ -221,7 +221,7 @@ public:
     	while(userStats[2] > 0&&encounterStats[0]>0){
   		//cout<<"got here"<<endl;
     		//do battle
-    		response = ByteArray("What will you do? (attack, skill, flee)");
+    		response = ByteArray("\nWhat will you do? (attack, skill, flee)");
     		try {socket.Write(response);}
     		catch (...) {
     			cout << "Battle failed (Server end)" <<endl;
@@ -239,7 +239,7 @@ public:
     				//don't allow negative damage
     				if (damage<0){damage=0;}
     				encounterStats[0] -= damage;
-    				response = ByteArray("you dealt "+(to_string(damage))+" damage!\n");
+    				response = ByteArray("\nyou dealt "+(to_string(damage))+" damage!");
     				try {socket.Write(response);}
     				catch (...) {
     					cout << "Battle failed (Server end)" <<endl;
@@ -252,7 +252,7 @@ public:
     					if (dTaken<0){dTaken=0;}
     					userStats[0] -= dTaken;
     					if(userStats[2]<=0) {return 1;}
-    					response = ByteArray("you took "+(to_string(dTaken))+" damage!\nyou have "+(to_string(userStats[2]))+" hp remaining\n");
+    					response = ByteArray("\nyou took "+(to_string(dTaken))+" damage!\nyou have "+(to_string(userStats[2]))+" hp remaining");
     					try {socket.Write(response);}
     						catch (...) {
     					cout << "Battle failed (Server end)" <<endl;
@@ -265,10 +265,11 @@ public:
     				//don't allow negative damage
     				if (dTaken<0){dTaken=0;}
     				userStats[2] -= dTaken;
-    				response = ByteArray("you took "+(to_string(dTaken))+" damage!\nyou have "+(to_string(userStats[2]))+" hp remaining\n");
+    				response = ByteArray("\nyou took "+(to_string(dTaken))+" damage!\nyou have "+(to_string(userStats[2]))+" hp remaining");
     					try {socket.Write(response);}
     						catch (...) {
     					cout << "Battle failed (Server end)" <<endl;
+    					}
     				//user defeated before they can attack
     				if(userStats[2]<=0) {return 1;}
     				else{
@@ -279,7 +280,6 @@ public:
     				}
     			}
     		}
-    	}
     		else if(data.ToString() == "skill"){
     			//display skills
     			
@@ -304,7 +304,7 @@ public:
     				//don't allow negative damage
     				if (dTaken<0){dTaken=0;}
     				userStats[2] -= dTaken;
-    				response = ByteArray("you took "+(to_string(dTaken))+" damage!\nyou have "+(to_string(userStats[2]))+" hp remaining\n");
+    				response = ByteArray("\nyou took "+(to_string(dTaken))+" damage!\nyou have "+(to_string(userStats[2]))+" hp remaining");
     				try {socket.Write(response);}
     				catch (...) {
     					cout << "Battle failed (Server end)" <<endl;
@@ -322,7 +322,7 @@ public:
     	}
     	else{
     		string loot = lootArray[drop];
-    		response = ByteArray("You obtained a "+loot+"!\nWould you like to equip?\n[0]"+userEquips[0]+"\n[1]"+userEquips[1]+"\n[2]"+userEquips[2]+"\n[3] discard the item");
+    		response = ByteArray("\nYou obtained a "+loot+"!\nWould you like to equip?\n[0]"+userEquips[0]+"\n[1]"+userEquips[1]+"\n[2]"+userEquips[2]+"\n[3] discard the item");
     		try {socket.Write(response);}
     		catch (...) {
     			cout << "Loot failed (Server end)" <<endl;
@@ -344,7 +344,7 @@ public:
     	//code for xp gain
     	if(floor%5==0){
     		//boss floor gives 20xp
-    		ByteArray response = ByteArray("You gained 20 exp!\n");
+    		ByteArray response = ByteArray("\nYou gained 20 exp!");
     		try {socket.Write(response);}
     		catch (...) {
     			cout << "xp failed (Server end)" <<endl;
@@ -358,7 +358,7 @@ public:
     			//randomly increase a stat between hp,atk,def
     			srand(time(NULL));
     			userStats[2 + (rand() % 3 + 0)] += 1;
-    			ByteArray response = ByteArray("You leveled up!\n");
+    			ByteArray response = ByteArray("\nYou leveled up!");
     			try {socket.Write(response);}
     			catch (...) {
     				cout << "level failed (Server end)" <<endl;
@@ -368,7 +368,7 @@ public:
     	else{
     		//normal encounter gives 5xp
     		userStats[1] += 5;
-    		ByteArray response = ByteArray("You gained 5 exp!\n");
+    		ByteArray response = ByteArray("\nYou gained 5 exp!");
     		try {socket.Write(response);}
     		catch (...) {
     			cout << "xp failed (Server end)" <<endl;
@@ -381,7 +381,7 @@ public:
     			//randomly increase a stat between hp,atk,def
     			srand(time(NULL));
     			userStats[2 + (rand() % 3 + 0)] += 1;
-    			ByteArray response = ByteArray("You leveled up!\n");
+    			ByteArray response = ByteArray("\nYou leveled up!");
     			try {socket.Write(response);}
     			catch (...) {
     				cout << "level failed (Server end)" <<endl;
@@ -556,7 +556,7 @@ public:
 				floor += 1;
 			}
 			if (defeat){
-				response = ByteArray("you died!");
+				response = ByteArray("\nyou died!");
     				try {socket.Write(response);}
     				catch (...) {
     					cout << "Battle failed (Server end)" <<endl;
