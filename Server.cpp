@@ -34,6 +34,11 @@ private:
     string userEquips[3] = {"empty","empty","empty"};
     //user can have at most 3 skills
     string userSkills[3];
+    string username ="";
+    string target ="";
+    int targetdmg;
+    bool updated;
+    vector<string> onlinePlayers;
 
 public:
     ClientThread(Socket& socket)
@@ -60,6 +65,97 @@ public:
     	}
     	
     	return floors;
+    }
+    
+    int setPlayerList(vector<string> playerList){
+    	onlinePlayers = playerList;
+    	return 0;
+    }
+    
+    string getUsername(){return username;}
+    string getTarget(){return target;}
+    int gettargetdmg(){return targetdmg;}
+    int getHp(){return userStats[2];}
+    int getAtk(){return userStats[3];}
+    int getDef(){return userStats[4];}
+    int setHp(int hp){
+    	userStats[2] = hp;
+    	return 0;
+    }
+    int targetproc(){targetdmg = 0;
+    return 0;}
+    int update(){
+    	updated = true;
+    	return 0;
+    }
+    
+    int pvpClient (void){
+    	bool fightReady = false;
+    	while(data.ToString()!="done") {
+    		
+		//get list of online players
+    		string playerList = onlinePlayers[0];
+    		if(onlinePlayers.size()>1){
+    			for(int i=1; i<onlinePlayers.size();i++){
+    				playerList += ("\n"+onlinePlayers[i]);
+    			}
+    			playerList += "\nEnter a player's name to request a fight";
+    			fightReady = true;
+    		}
+    		else{
+    			playerList = "You are the only player online. Please wait a bit and type \"ok\".";
+    		}
+    		ByteArray response = ByteArray(playerList);
+    		try {socket.Write(response);}
+    		catch (...) {
+    			cout << "Client failed (Server end)" <<endl;
+    		}
+    		try {socket.Read(data);}
+    		catch (...) {
+    			cout << "Client failed (Client end)" <<endl;
+    		}
+    		//both players need to request to fight each other in order for the fight client to work properly
+    		if(fightReady){
+    			target = data.ToString();
+    			while(!updated){
+    				;
+    			}
+    			while(userStats[2]>0){
+    				//do battle
+    				response = ByteArray("\nWhat will you do? (attack, skill, flee)");
+    				try {socket.Write(response);}
+  				catch (...) {
+   		    			cout << "Battle failed (Server end)" <<endl;
+  				}
+   				try {socket.Read(data);}
+ 		   		catch (...) {
+    				cout << "Battle failed (Client end)" <<endl;
+    				}
+    				if (data.ToString()=="attack"){
+    					//user defeated before they can attack
+    					if(userStats[2]<=0) {
+    					response = ByteArray("\nyou died!");
+    					try {socket.Write(response);}
+    					catch (...) {
+    						cout << "Battle failed (Server end)" <<endl;
+    					}
+    					data = ByteArray("done");
+    					break;
+    					return 1;
+    					}
+    					targetdmg = 1;
+    					response = ByteArray("\nyou hit "+target+"!\nYour HP: "+(to_string(userStats[2])));
+    					try {socket.Write(response);}
+    					catch (...) {
+    						cout << "Battle failed (Server end)" <<endl;
+    					}
+    				}
+    				
+    			}
+    			return 0;
+    		}
+    	}
+    	return 1;
     }
     
     int enemyEncounter(int floor){
@@ -518,14 +614,16 @@ public:
 	}
 	
 	//code for login process
-	string username = data.ToString();
+	username = data.ToString();
 	loginUser(username);
 	
 	getUserData(username);
 	
+	//add self to playerList
 	
+	onlinePlayers.push_back(username);
 	
-	 response = ByteArray("Ready to begin? ");
+	 response = ByteArray("Ready to begin? (dungeon or pvp) ");
     	//Prompt user login
     	try {socket.Write(response);}
     	catch (...) {
@@ -537,6 +635,11 @@ public:
 		cout << "Client fails" <<endl;
 	}
 	cout << data.ToString() << endl;
+	
+	if (data.ToString()=="pvp"){
+		pvpClient();
+		return 1;
+	}
 	//code for initialization
 	
 	while(data.ToString() != "done"){
@@ -610,6 +713,8 @@ private:
     SocketServer& server;
     ByteArray data;
     vector<ClientThread *> threads;
+    vector<string> playerList;
+    vector<string> targetList;
 public:
     ServerThread(SocketServer& server)
     : server(server)
@@ -640,8 +745,52 @@ public:
         Socket& socketReference = *newConnection;
 	//You can use this to read data from socket and write data to socket. You may want to put this read/write somewhere else. You may use ByteArray
 	threads.push_back(new ClientThread(socketReference));
-	
+	bool ready = true;
+	if(ready){
+	if(threads.size()>2){
+	if(playerList.size()<threads.size()){
+			playerList.push_back(threads[threads.size()]->getUsername());
+		}
+	for(int i=0; i<threads.size();i++){
+		//constantly update playerLists
+		playerList[i] = threads[i]->getUsername();
 	}
+	for(int i=0; i<threads.size();i++){
+		//constantly update playerLists
+		playerList[i] = threads[i]->getUsername();
+	}
+	for(int i=0; i<threads.size();i++){
+		//constantly update playerLists
+		threads[i]->setPlayerList(playerList);
+	}
+	for(int i=0; i<threads.size();i++){
+		//constantly update playerLists
+		threads[i]->setPlayerList(playerList);
+	}
+	while(targetList.size()<threads.size()){
+		targetList.push_back(threads[threads.size()]->getTarget());
+	}
+	for(int i=0; i<threads.size();i++){
+		//constantly update targetList
+		if(threads[i]->getTarget()!=""){
+			targetList[i] = threads[i]->getTarget();
+			threads[i]->update();
+		}
+	}
+	for(int i=0; i<threads.size();i++){
+		//constantly check for attacks
+		if(threads[i]->gettargetdmg()){
+			string temptarget = targetList[i];
+			for(int i=0; i<threads.size();i++){
+				if(threads[i]->getUsername() == temptarget){
+				//do damage
+				threads[i]->setHp(threads[i]->getHp()-1);
+				}
+			}
+			threads[i]->targetproc();
+			}
+		}
+	}}}
 	return 1;
     }
 };
